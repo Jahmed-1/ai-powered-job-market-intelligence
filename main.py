@@ -5,6 +5,7 @@ from skill_extractor.extractor import extract_skills
 from skill_extractor.skill_analyzer import count_skills
 from role_classifier.classifier import classify_role
 from role_classifier.role_analyzer import count_roles
+from ml_model.predict_role import predict_job_role
 import pandas as pd
 
 
@@ -16,6 +17,13 @@ filtered_df["predicted_role"] = filtered_df.apply(
     lambda row: classify_role(row["title"], row["clean_description"]),
     axis=1
 )
+filtered_df[["ml_predicted_role", "ml_confidence"]] = filtered_df.apply(
+    lambda row: pd.Series(
+        predict_job_role(row["title"], row["clean_description"])
+    ),
+    axis=1
+)
+
 role_counts = count_roles(filtered_df["predicted_role"])
 role_df = pd.DataFrame(
     role_counts.items(),
@@ -37,7 +45,17 @@ skill_df = skill_df.sort_values(by="count", ascending=False)
 filtered_df.to_csv("data/filtered_jobs.csv", index=False)
 skill_df.to_csv("data/top_skills.csv", index=False)
 
-print(filtered_df[["title", "predicted_role", "extracted_skills"]].head(10).to_string())
+print(
+    filtered_df[
+        [
+            "title",
+            "predicted_role",
+            "ml_predicted_role",
+            "ml_confidence",
+            "extracted_skills",
+        ]
+    ].head(10).to_string()
+)
 print("Top demanded skills:")
 for skill, count in skill_counts.items():
     print(f"{skill}: {count}")

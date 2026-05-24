@@ -66,7 +66,17 @@ st.plotly_chart(fig_roles, use_container_width=True)
 st.subheader("Filtered Job Postings")
 
 st.dataframe(
-    jobs_df[["title", "company", "location", "predicted_role", "extracted_skills"]],
+    jobs_df[
+        [
+            "title",
+            "company",
+            "location",
+            "predicted_role",
+            "ml_predicted_role",
+            "ml_confidence",
+            "extracted_skills",
+        ]
+    ],
     use_container_width=True
 )
 
