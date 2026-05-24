@@ -3,6 +3,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from candidate_matcher.semantic_matcher import calculate_semantic_similarity
 from preprocessing.text_cleaner import clean_text
 from skill_extractor.extractor import extract_skills
+from candidate_matcher.language_normalizer import normalize_german_english_terms
 
 
 def calculate_similarity(text1, text2):
@@ -21,10 +22,14 @@ def analyze_candidate_match(job_description, cv_text, cover_letter_text):
     cv_text = clean_text(cv_text)
     cover_letter_text = clean_text(cover_letter_text)
 
+    job_description = normalize_german_english_terms(job_description)
+
     jd_skills = extract_skills(job_description)
     cv_skills = extract_skills(cv_text)
     cover_letter_skills = extract_skills(cover_letter_text)
-
+    job_description = normalize_german_english_terms(job_description)
+    cv_text = normalize_german_english_terms(cv_text)
+    cover_letter_text = normalize_german_english_terms(cover_letter_text)
     matched_skills = list(set(jd_skills) & set(cv_skills))
     missing_skills = list(set(jd_skills) - set(cv_skills))
 
